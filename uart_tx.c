@@ -7,20 +7,19 @@
 // Define the virtual serial port device
 #define VIRTUAL_SERIAL_PORT "COM7"  // INPUT Port (Current set to COM7 but need to change to respective virtual input port from com0com) 
 
-int main() {
-	
-    int serial_fd; // Integer that holds the file descriptor for the virtual port
+// Function to transmit data through the virtual serial port
+void transmit_data(const char *input_filename) {
+    int serial_fd; // File descriptor for the virtual serial port
     
-    
-    //Check or test for error in opening virtual serial port
+    // Open the virtual serial port for writing
     serial_fd = open(VIRTUAL_SERIAL_PORT, O_WRONLY);
     if (serial_fd == -1) {
         perror("Error opening virtual serial port");
         exit(EXIT_FAILURE);
     }
 
-    // Opens input file and reads input from "input.txt" atm
-    FILE *input_file = fopen("input.txt", "r");
+    // Open input file and read input
+    FILE *input_file = fopen(input_filename, "r");
     if (input_file == NULL) {
         perror("Error opening input file");
         close(serial_fd);
@@ -40,9 +39,13 @@ int main() {
     }
 
     // Close the input file and the virtual serial port
-    fclose(input_file); 
+    fclose(input_file);
     close(serial_fd);
-
-    return 0;
 }
 
+/*
+int main() {
+    transmit_data("input.txt"); // Transmit data from input.txt
+    return 0;
+}
+*/
