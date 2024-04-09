@@ -1,51 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 
 // Define the virtual serial port device
-#define VIRTUAL_SERIAL_PORT "COM7"  // INPUT Port (Current set to COM7 but need to change to respective virtual input port from com0com) 
+#define VIRTUAL_SERIAL_PORT "COM8"  // INPUT Port (Current set to COM8 but need to change to respective virtual output port from com0com) 
 
-// Function to transmit data through the virtual serial port from input to ouput ports
-void transmit_data(const char *input_filename) {
-    int serial_fd; // File descriptor for the virtual serial port
-    
-    // Open the virtual serial port for writing
-    serial_fd = open(VIRTUAL_SERIAL_PORT, O_WRONLY);
+// Function to receive data from the virtual serial port
+void receive_data() {
+    int serial_fd; // File descriptor for the serial port
+
+    // Open the virtual serial port for reading
+    serial_fd = open(VIRTUAL_SERIAL_PORT, O_RDONLY);
+
+    // Check for error in opening virtual serial port
     if (serial_fd == -1) {
         perror("Error opening virtual serial port");
         exit(EXIT_FAILURE);
     }
 
-    // Open input file and read input
-    FILE *input_file = fopen(input_filename, "r");
-    if (input_file == NULL) {
-        perror("Error opening input file");
-        close(serial_fd);
-        exit(EXIT_FAILURE);
-    }
-
-    // Read input from the file and send it to the virtual serial port
-    char input_buffer[256];
+    // Read data from the serial port and print it to stdout (Can edit to manipulate output)
+    char received_buffer[256];
     ssize_t bytes_read;
-    while ((bytes_read = fread(input_buffer, 1, sizeof(input_buffer), input_file)) > 0) {
-        if (write(serial_fd, input_buffer, bytes_read) != bytes_read) {
-            perror("Error writing to virtual serial port");
-            fclose(input_file);
-            close(serial_fd);
-            exit(EXIT_FAILURE);
-        }
+    while ((bytes_read = read(serial_fd, received_buffer, sizeof(received_buffer))) > 0) {
+        printf("Received: %.*s", (int)bytes_read, received_buffer); // Print received data
+        fflush(stdout); // Flush stdout to ensure data is printed immediately
     }
 
-    // Close the input file and the virtual serial port
-    fclose(input_file);
+    // Close the serial port
     close(serial_fd);
 }
 
 /*
 int main() {
-    transmit_data("input.txt"); // Transmit data from input.txt
+    receive_data(); // Receive data from the virtual serial port
     return 0;
 }
-/*
+*/
+
