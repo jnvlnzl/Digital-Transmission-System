@@ -4,7 +4,7 @@
 
 // Define the virtual serial port device
 #define VIRTUAL_SERIAL_PORT "COM8"  // INPUT Port (Current set to COM8 but need to change to respective virtual output port from com0com) 
-#define OUTPUT_FILE "received_data.txt"  // File to store received data
+#define OUTPUT_FILE "rx_uart_output.txt"  // File to store received data
 
 // Function to receive data from the virtual serial port and store it in a file
 void receive_and_store_data() {
@@ -73,4 +73,5 @@ int main() {
     return 0;
 }
 */
+
 
