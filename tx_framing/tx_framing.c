@@ -17,7 +17,7 @@ int main() {
     char hexOutput[MAX_SEQUENCE_NUMBER * 2]; // Buffer to store hexadecimal output
 
     // Open the input file for reading
-    FILE* inputFile = fopen("input_framing.txt", "r");
+    FILE* inputFile = fopen("tx_input_framing.txt", "r");
     if (inputFile == NULL) {
         perror("Error opening input file");
         return 1;
@@ -53,7 +53,7 @@ int main() {
     }
 
     // Open the output file for writing
-    FILE* outputFile = fopen("output_framing.txt", "w");
+    FILE* outputFile = fopen("tx_output_framing.txt", "w");
     if (outputFile == NULL) {
         perror("Error creating output file");
         return 1;
