@@ -56,10 +56,8 @@ int main() {
         return 1;
     }
 
-    // Close the input file as it's no longer needed
     fclose(inputFile);
 
-    // Remove trailing newline (if any)
     input[strcspn(input, "\n")] = '\0';
     
     char preamble[] = "FF";
@@ -67,7 +65,6 @@ int main() {
     int frame_type = 1;
     int payload_size = 2;
 
-    // Open the output files for writing
     FILE* outputFile1 = fopen("tx_channel_coding_output_binary.txt", "w");
     FILE* outputFile2 = fopen("tx_channel_coding_output_framing.txt", "w");
     if (outputFile1 == NULL || outputFile2 == NULL) {
@@ -77,7 +74,6 @@ int main() {
 
     int len = strlen(input);
 
-    // Convert binary input to hexadecimal
     char hexOutput[MAX_SEQUENCE_NUMBER * 2];
     for (int i = 0; i < len; i += 4) {
         int byte = 0;
@@ -133,7 +129,6 @@ int main() {
         sequence_number++;   
     }
 
-    // Close the output files
     fclose(outputFile1);
     fclose(outputFile2);
 
