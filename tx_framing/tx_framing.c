@@ -1,59 +1,25 @@
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define MAX_SEQUENCE_NUMBER 8000 // Maximum size of sequence number
+#define MAX_BINARY_SEQUENCE MAX_SEQUENCE_NUMBER * 8 // Maximum size of binary sequence
 
 // INPUT: Sequence of 0s and 1s from Source Coding
-// OUTPUT: Framed sequence in binary
-// Preamble = 11111111
+// OUTPUT: Framed sequence in binary in HEX
+// Preamble = FF
 // Frame Type = 01
-// Payload Size = 1000 or 8
+// Payload Size = 0002
 // FCS = 0000
 
-char* decimalToBinary(int decimal) {
-    // Calculate the number of bits required to represent the decimal
-    int numBits = 0;
-    int temp = decimal;
-    while (temp > 0) {
-        temp /= 2;
-        numBits++;
-    }
-
-    // Allocate memory for the binary string
-    char* binary = (char*)malloc((numBits + 1) * sizeof(char)); // +1 for null terminator
-    if (binary == NULL) {
-        printf("Memory allocation failed.\n");
-        exit(1);
-    }
-
-    // Convert decimal to binary
-    for (int i = numBits - 1; i >= 0; i--) {
-        binary[i] = (decimal % 2) + '0'; // Convert remainder to character
-        decimal /= 2;
-    }
-    binary[numBits] = '\0'; // Null terminate the string
-
-    // Return the binary string
-    return binary;
-}
-
 int main() {
-    char input[MAX_SEQUENCE_NUMBER];
-    
-    // Read the input from tx_input_framing.txt
-    FILE* inputFile = fopen("tx_input_framing.txt", "r");
-    if (inputFile == NULL) {
-        perror("Error opening input_framing file");
-        return 1;
-    }
+    char input[MAX_BINARY_SEQUENCE]; // Buffer to store binary sequence
+    char hexOutput[MAX_SEQUENCE_NUMBER * 2]; // Buffer to store hexadecimal output
 
-    // Create and open the output file
-    FILE* outputFile = fopen("tx_output_framing.txt", "w");
-    if (outputFile == NULL) {
-        perror("Error creating output_framing file");
-        fclose(inputFile); // Close the input file if output file creation failed
+    // Open the input file for reading
+    FILE* inputFile = fopen("input_framing.txt", "r");
+    if (inputFile == NULL) {
+        perror("Error opening input file");
         return 1;
     }
 
@@ -61,41 +27,56 @@ int main() {
     if (fgets(input, sizeof(input), inputFile) == NULL) {
         perror("Error reading input from file");
         fclose(inputFile);
-        fclose(outputFile);
         return 1;
     }
 
     // Close the input file as it's no longer needed
     fclose(inputFile);
 
-    char preamble[] = "11111111";
-    int sequence_number = 1;
-    int frame_type = 1;
-    int payload_size = 1000;
-    int fcs = 0;
-    
     // Remove trailing newline (if any)
     input[strcspn(input, "\n")] = '\0';
     
+    char preamble[] = "FF";
+    int sequence_number = 1;
+    int frame_type = 1;
+    int payload_size = 2;
+    int fcs = 0;
+
+    // Convert binary input to hexadecimal
     int len = strlen(input);
+    for (int i = 0; i < len; i += 4) {
+        int byte = 0;
+        for (int j = 0; j < 4 && i + j < len; j++) {
+            byte = (byte << 1) | (input[i + j] - '0');
+        }
+        sprintf(hexOutput + i / 4, "%X", byte);
+    }
+
+    // Open the output file for writing
+    FILE* outputFile = fopen("output_framing.txt", "w");
+    if (outputFile == NULL) {
+        perror("Error creating output file");
+        return 1;
+    }
+
+    int length = strlen(hexOutput);
     
     // Iterate through the word, printing two characters at a time
-    for (int i = 0; i < len; i += 8) {
-        int remaining_chars = len - i;  // Calculate remaining characters
-        char* binary = decimalToBinary(sequence_number);
+    for (int i = 0; i < length; i += 2) {
+        int remaining_chars = length - i;  // Calculate remaining characters
         
-        fprintf(outputFile, "%s%08s%02d%04d", preamble, binary, frame_type, payload_size);
+        fprintf(outputFile, "%s%04X%02d%04d", preamble, sequence_number, frame_type, payload_size);
         
         // Handle trailing spaces if fewer than payload_size characters remaining
-        if (remaining_chars < 8) {
-            for (int k = 0; k < 8 - remaining_chars; k++) {
-                fprintf(outputFile, "0");  // Print spaces for missing characters
+        if (remaining_chars < 2) {
+            for (int k = 0; k < 2 - remaining_chars; k++) {
+                fprintf(outputFile, "00");  // Print spaces for missing characters
             }
         }
         
-        // Print up to payload_size characters
-        for (int j = 0; j < 8 && i + j < len; j++) {
-            fprintf(outputFile, "%02c", input[i + j]); // Print characters in hexadecimal
+        // Print up to payload_size characters in hexadecimal
+        for (int j = 0; j < 2 && i + j < length; j++) {
+            fprintf(outputFile, "%c", hexOutput[i + j]);
         }
         
         fprintf(outputFile, "%04d", fcs); // Print FCS and newline
@@ -105,6 +86,6 @@ int main() {
 
     // Close the output file
     fclose(outputFile);
-    
+
     return 0;
 }
