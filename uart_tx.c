@@ -49,7 +49,7 @@ void transmit_data(const char *input_filename) {
 
 /*
 int main() {
-    transmit_data("input.txt"); // Transmit data from input.txt
+    transmit_data("tx_line_coding_output.txt"); // Transmit data from input.txt or line coding output text file.
     return 0;
 }
 */
