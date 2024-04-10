@@ -31,7 +31,7 @@ int main() {
     char hex_input[3];
     size_t count = 0;
 
-    while (scanf("%2s", hex_input) == 1 && count < MAX_BLOCK_SIZE) {
+    while (fgets(hex_input, sizeof(hex_input), stdin) != NULL && count < MAX_BLOCK_SIZE) {
         uint8_t data = (uint8_t)strtol(hex_input, NULL, 16);
 
         // Calculate and output the CRC-8 in binary
