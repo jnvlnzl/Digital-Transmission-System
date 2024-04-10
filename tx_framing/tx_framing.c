@@ -5,6 +5,13 @@
 
 #define MAX_SEQUENCE_NUMBER 8000 // Maximum size of sequence number
 
+// INPUT: Sequence of 0s and 1s from Source Coding
+// OUTPUT: Framed sequence in binary
+// Preamble = 11111111
+// Frame Type = 01
+// Payload Size = 1000 or 8
+// FCS = 0000
+
 char* decimalToBinary(int decimal) {
     // Calculate the number of bits required to represent the decimal
     int numBits = 0;
