@@ -28,17 +28,11 @@ uint8_t crc8(const uint8_t *data, size_t len) {
 }
 
 int main() {
-    char hex_input[3]; // Buffer to store two hex digits plus null terminator
+    char hex_input[3];
     size_t count = 0;
 
-    // Read hex input and output binary sequence with CRC-8
     while (scanf("%2s", hex_input) == 1 && count < MAX_BLOCK_SIZE) {
         uint8_t data = (uint8_t)strtol(hex_input, NULL, 16);
-
-        // Output the data byte in binary
-        for (int i = 7; i >= 0; --i) {
-            putchar(((data >> i) & 0x01) ? '1' : '0');
-        }
 
         // Calculate and output the CRC-8 in binary
         uint8_t crc = crc8(&data, sizeof(uint8_t));
