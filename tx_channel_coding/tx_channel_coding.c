@@ -1,11 +1,12 @@
+// CHANNEL CODING: CRC-8 
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_SEQUENCE_NUMBER 8000 // Maximum size of sequence number
-#define MAX_BINARY_SEQUENCE MAX_SEQUENCE_NUMBER * 8 // Maximum size of binary sequence
-#define CRC8_POLYNOMIAL 0x07
+// INPUT: Sequence of Frame Bytes in HEX FROM: Framing
+// OUTPUT: Sequence of Frame Bits as '0' and '1' TO: Line Coding 
 
 // CRC-8 calculation function
 uint8_t crc8(uint8_t *data, size_t len) {
