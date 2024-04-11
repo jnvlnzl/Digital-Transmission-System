@@ -8,6 +8,8 @@
 // OUTPUT: Sequence of Frame Bits as '0' and '1' TO: Line Coding 
 // also an output: substitued fcs to tx_framing_output
 
+// hi mali ito mali pagkaintindi ko wait wait
+
 #define MAX_SEQUENCE_NUMBER 8000 // Maximum size of sequence number
 #define MAX_BINARY_SEQUENCE MAX_SEQUENCE_NUMBER * 8 // Maximum size of binary sequence
 #define POLYNOMIAL 0x07  // CRC-8 polynomial
