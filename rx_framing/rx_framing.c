@@ -11,7 +11,7 @@
 #define CRC8_POLYNOMIAL 0x07
 #define MAX_BLOCK_SIZE 256
 #define MAX_FRAME_SIZE 1024 // Maximum size of a frame
-#define MAX_DATA_BLOCK_SIZE 32
+#define MAX_DATA_BLOCK_SIZE 38
 
 // Structure representing a frame
 typedef struct {

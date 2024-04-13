@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define MAX_SEQUENCE_NUMBER 8000 // Maximum size of sequence number
+#define MAX_DATA_BLOCK_SIZE 38 // Maximum size of data block
 #define MAX_BINARY_SEQUENCE MAX_SEQUENCE_NUMBER * 8 // Maximum size of binary sequence
 
 // INPUT: Sequence of 0s and 1s from Source Coding
@@ -81,7 +82,8 @@ int main() {
         
         fprintf(outputFile, "%04d", fcs); // Print FCS and newline
         
-        sequence_number++;   
+        sequence_number++;
+        sequence_number %= 0x1F41; // Wrap around when sequence_number reaches 1F40   
     }
 
     // Close the output file
