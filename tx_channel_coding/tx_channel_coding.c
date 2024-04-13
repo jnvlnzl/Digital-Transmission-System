@@ -8,6 +8,10 @@
 // INPUT: Sequence of Frame Bytes in HEX FROM: Framing
 // OUTPUT: Sequence of Frame Bits as '0' and '1' TO: Line Coding 
 
+#define MAX_SEQUENCE_NUMBER 8000 // Maximum size of sequence number
+#define MAX_BINARY_SEQUENCE MAX_SEQUENCE_NUMBER * 8 // Maximum size of binary sequence
+#define CRC8_POLYNOMIAL 0x07
+
 // CRC-8 calculation function
 uint8_t crc8(uint8_t *data, size_t len) {
     uint8_t crc = 0;
@@ -56,14 +60,14 @@ int main() {
     // Convert hexadecimal string to bytes
     size_t len = strlen(input) / 2;
     uint8_t *bytes = malloc(len);
-    hex_string_to_bytes(input, bytes, len);
+    hex_string_to_bytes(input, bytes, len - 2); // Exclude the FCS part
 
     // Calculate the CRC-8 for the byte sequence
-    uint8_t crc = crc8(bytes, len);
+    uint8_t crc = crc8(bytes, len - 2); // Exclude the FCS part
 
-    // Convert each byte of the input to its binary representation
+    // Convert each byte of the input (excluding FCS) to its binary representation
     size_t output_index = 0; 
-    for (size_t i = 0; i < len; i++) { 
+    for (size_t i = 0; i < len - 2; i++) { // Exclude the FCS part
         uint8_t byte = bytes[i]; 
         for (int j = 7; j >= 0; j--) { 
             output[output_index++] = ((byte >> j) & 1) + '0'; 
@@ -83,4 +87,5 @@ int main() {
     free(bytes);
 
     return 0;
+
 }
