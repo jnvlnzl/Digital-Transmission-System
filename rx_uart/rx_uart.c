@@ -17,24 +17,6 @@ void receive_and_store_data() {
         exit(EXIT_FAILURE);
     }
 
-    // Configure serial port settings
-    // Need this for data tranmission to work with Command Prompt, settings taken to match PUTTY program
-    DCB dcbSerialParams = { 0 };
-    dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
-    if (!GetCommState(serial_handle, &dcbSerialParams)) {
-        perror("Error getting serial port state");
-        CloseHandle(serial_handle);
-        exit(EXIT_FAILURE);
-    }
-    dcbSerialParams.BaudRate = CBR_9600; // Set baud rate to 9600
-    dcbSerialParams.ByteSize = 8;        // 8 data bits
-    dcbSerialParams.StopBits = ONESTOPBIT; // 1 stop bit
-    dcbSerialParams.Parity = NOPARITY;     // No parity
-    if (!SetCommState(serial_handle, &dcbSerialParams)) {
-        perror("Error setting serial port state");
-        CloseHandle(serial_handle);
-        exit(EXIT_FAILURE);
-    }
 
     // Open the output file for writing (Can edit this to take inputs from keyboard)
     FILE *output_file = fopen(OUTPUT_FILE, "w");
