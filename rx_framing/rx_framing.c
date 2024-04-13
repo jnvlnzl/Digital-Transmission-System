@@ -81,15 +81,13 @@ int main() {
     sprintf(frame.fcs, "%02X", crc);
 
     // Write the frame to the output file
-    fprintf(outputFile, "Preamble: %s\n", frame.preamble);
-    fprintf(outputFile, "Header: %s\n", frame.header);
-    fprintf(outputFile, "Data Block: %s\n", frame.dataBlock);
+    fprintf(outputFile, "Preamble: %X\n", frame.preamble);
+    fprintf(outputFile, "Header: %X\n", frame.header);
+    fprintf(outputFile, "Data Block: %X\n", frame.dataBlock);
     fprintf(outputFile, "FCS: %s\n", frame.fcs);
 
     // Close the output file
     fclose(outputFile);
-
-    printf("Output written to rx_framing_output.txt\n");
 
     return 0;
 }
