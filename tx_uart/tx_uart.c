@@ -37,9 +37,8 @@ void transmit_data() {
     close(serial_fd);
 }
 
-/*
 int main() {
     transmit_data(); // Transmit data from input.txt or line coding output text file.
     return 0;
 }
-*/
+
