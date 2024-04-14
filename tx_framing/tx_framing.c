@@ -13,29 +13,36 @@
 // Payload Size = 0002
 // FCS = 0000
 
+// Function to convert a binary string to its hexadecimal representation
+char* binaryToHexadecimal(const char* input) {
+    size_t binaryLength = strlen(input) - 1;
+    size_t hexLength = (binaryLength + 3) / 4; // Calculate the number of hexadecimal characters required
+    char* hexadecimal = (char*)malloc((hexLength + 1) * sizeof(char));
+
+    for (size_t i = 0; i < hexLength; i++) {
+        int byte = 0;
+        for (int j = 0; j < 4 && i * 4 + j < binaryLength; j++) {
+            byte = (byte << 1) | (input[i * 4 + j] - '0');
+        }
+        sprintf(hexadecimal + i, "%X", byte);
+    }
+
+    return hexadecimal;
+}
+
 int main() {
     char input[MAX_BINARY_SEQUENCE]; // Buffer to store binary sequence
     char hexOutput[MAX_SEQUENCE_NUMBER * 2]; // Buffer to store hexadecimal output
 
-    // Open the input file for reading
-    FILE* inputFile = fopen("tx_input_framing.txt", "r");
-    if (inputFile == NULL) {
-        perror("Error opening input file");
+    // Pipe operation
+    if (fgets(input, sizeof(input), stdin) == NULL) {
+        perror("Error reading input from stdin");
         return 1;
     }
-
-    // Read input from the file
-    if (fgets(input, sizeof(input), inputFile) == NULL) {
-        perror("Error reading input from file");
-        fclose(inputFile);
-        return 1;
-    }
-
-    // Close the input file as it's no longer needed
-    fclose(inputFile);
-
+	
     // Remove trailing newline (if any)
     input[strcspn(input, "\n")] = '\0';
+    char* hexadecimal = binaryToHexadecimal(input);
     
     char preamble[] = "FF";
     int sequence_number = 1;
@@ -43,51 +50,31 @@ int main() {
     int payload_size = 2;
     int fcs = 0;
 
-    // Convert binary input to hexadecimal
-    int len = strlen(input);
-    for (int i = 0; i < len; i += 4) {
-        int byte = 0;
-        for (int j = 0; j < 4 && i + j < len; j++) {
-            byte = (byte << 1) | (input[i + j] - '0');
-        }
-        sprintf(hexOutput + i / 4, "%X", byte);
-    }
-
-    // Open the output file for writing
-    FILE* outputFile = fopen("tx_output_framing.txt", "w");
-    if (outputFile == NULL) {
-        perror("Error creating output file");
-        return 1;
-    }
-
-    int length = strlen(hexOutput);
-    
+    int length = strlen(hexadecimal);
+	        
     // Iterate through the word, printing two characters at a time
     for (int i = 0; i < length; i += 2) {
         int remaining_chars = length - i;  // Calculate remaining characters
         
-        fprintf(outputFile, "%s%04X%02d%04d", preamble, sequence_number, frame_type, payload_size);
+        printf("%s%04X%02d%04d", preamble, sequence_number, frame_type, payload_size);
         
         // Handle trailing spaces if fewer than payload_size characters remaining
         if (remaining_chars < 2) {
             for (int k = 0; k < 2 - remaining_chars; k++) {
-                fprintf(outputFile, "00");  // Print spaces for missing characters
+                printf("0");  // Print spaces for missing characters
             }
         }
         
         // Print up to payload_size characters in hexadecimal
         for (int j = 0; j < 2 && i + j < length; j++) {
-            fprintf(outputFile, "%c", hexOutput[i + j]);
+            printf("%c", hexadecimal[i + j]);
         }
         
-        fprintf(outputFile, "%04d", fcs); // Print FCS and newline
+        printf("%04d", fcs); // Print FCS 
         
         sequence_number++;
         sequence_number %= 0x1F41; // Wrap around when sequence_number reaches 1F40   
     }
-
-    // Close the output file
-    fclose(outputFile);
 
     return 0;
 }
