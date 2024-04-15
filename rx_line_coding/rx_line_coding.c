@@ -27,10 +27,11 @@ void decode_BAMI_HDB3(char *input, char *output) {
         if ((i + 3 < strlen(input) && strncmp(input + i, "000-", 4) == 0) || 
             (i + 3 < strlen(input) && strncmp(input + i, "000+", 4) == 0)) {
             // Decoded as '0000' or '0001' depending on the last polarity
-            if ((last_polarity == '+') && (pulses_since_last_sub % 2 == 0)) {
-                strncpy(output + i, "0001", 4);
-            } else {
+            if ((last_polarity == '-' && strncmp(input + i, "000-", 4) == 0) || 
+                (last_polarity == '+' && strncmp(input + i, "000+", 4) == 0)) {
                 strncpy(output + i, "0000", 4);
+            } else {
+                strncpy(output + i, "0001", 4);
             }
             pulses_since_last_sub++;
             i += 4;
