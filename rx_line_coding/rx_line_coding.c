@@ -6,10 +6,11 @@
 // INPUT: Sequence of half-bit symbols (+,-,0) FROM UART-RX
 // OUTPUT: Sequence of '0' and '1' TO: FRAMING
 
-#define MAX_BLOCK_SIZE 38 * 8
+#define MAX_SEQUENCE_NUMBER 8000
+#define MAX_BINARY_SEQUENCE MAX_SEQUENCE_NUMBER * 8
 
 void decode_BAMI_HDB3(char *input, char *output) {
-    int i = 0; // Index for input string
+    int i = 0; 
     int pulses_since_last_sub = 0;
     char last_polarity = '+'; 
 
@@ -45,7 +46,7 @@ void decode_BAMI_HDB3(char *input, char *output) {
             if (input[i] == '-' || input[i] == '+') {
                 output[i] = '1'; 
                 last_polarity = input[i]; // Update the last polarity
-                pulses_since_last_sub++;
+                pulses_since_last_sub = 0; // Reset pulses since last substitution
             } else if (input[i] == '0') {
                 output[i] = '0'; 
             }
@@ -55,14 +56,10 @@ void decode_BAMI_HDB3(char *input, char *output) {
     output[i] = '\0'; 
 }
 
-
 int main() {
-    //char input[100] = "-+-+-+-+-00-+00+-00-000+000+000-000-+00+-00-00+0-+0-+0-+000+-00-+00+-00-000+0-+0";
-    //char output[100];
+    char input[MAX_BINARY_SEQUENCE + 1], output[MAX_BINARY_SEQUENCE + 1];
 
-    char input[MAX_BLOCK_SIZE + 1], output[MAX_BLOCK_SIZE + 1];
-
-    fgets(input, MAX_BLOCK_SIZE, stdin);
+    fgets(input, MAX_BINARY_SEQUENCE, stdin);
     decode_BAMI_HDB3(input, output);
 
     printf("%s\n", output);
